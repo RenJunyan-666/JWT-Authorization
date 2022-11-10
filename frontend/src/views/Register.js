@@ -1,13 +1,20 @@
 import axios from "axios";
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
 
 export default function Register() {
+  const navigate = useNavigate();
   const [values, setValues] = useState({
     email: "",
     password: "",
   });
+
+  const generateError = (err) => {
+    toast.error(err, {
+      position: "bottom-right",
+    });
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -21,10 +28,14 @@ export default function Register() {
           withCredentials: true,
         }
       );
-      console.log(data);
+
       if (data) {
         if (data.errors) {
+          const { email, password } = data.errors;
+          if (email) generateError(email);
+          else if (password) generateError(password);
         } else {
+          navigate("/");
         }
       }
     } catch (err) {
